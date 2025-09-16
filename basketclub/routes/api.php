@@ -11,6 +11,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:api');
 
+// Player endpoints
 Route::middleware([ApiForceAcceptHeader::class])->group(callback: function (): void{
     // Endpoint listado de players
     Route::get(uri: '/players', action: [PlayerController::class, 'index']);
@@ -26,5 +27,16 @@ Route::middleware([ApiForceAcceptHeader::class])->group(callback: function (): v
     Route::delete(uri: '/players/{id}', action: [PlayerController::class, 'destroy']);
 });
 
-// Endpoint listado de equipos
-Route::get(uri: '/teams', action: [TeamsController::class, 'index'])->middleware(middleware: [ApiForceAcceptHeader::class]);
+// Teams endpoints
+Route::middleware([ApiForceAcceptHeader::class])->group(callback: function (): void{
+    // Endpoint listado de equipos
+    Route::get(uri: '/teams', action: [TeamsController::class, 'index']);
+    // Endpoint equipo por Id
+    Route::get(uri: '/teams/{id}', action: [TeamsController::class, 'show']);
+    // Endpoint creación de equipos
+    Route::post(uri: '/teams', action: [TeamsController::class, 'store']);
+    // Endpoint actualizacion de equipos
+    Route::put(uri: '/teams/{id}', action: [TeamsController::class, 'update']);
+    // Endpoint eliminar de equipos
+    Route::delete(uri: '/teams/{id}', action: [TeamsController::class, 'destroy']);
+});

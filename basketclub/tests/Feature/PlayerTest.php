@@ -11,16 +11,6 @@ class PlayerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * A basic feature test example.
-     */
-    public function test_example(): void
-    {
-        $response = $this->get(uri:'/');
-
-        $response->assertStatus(status:200);
-    }
-
     public function test_index_PlayerController_getPlayers_ReturnStatus200(): void
     {
         $ver = env(key:"APP_VER");
@@ -83,7 +73,7 @@ class PlayerTest extends TestCase
     * Uso de POST Players
     * Creacion
     */
-    public function test_store_PLayerController_postPlayer(): void
+    public function test_store_PlayerController_postPlayer(): void
     {
         $player = [
             'first_name' => 'Lucia',
