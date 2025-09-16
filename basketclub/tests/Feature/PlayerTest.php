@@ -5,9 +5,12 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use App\Models\Player;
 
 class PlayerTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * A basic feature test example.
      */
@@ -25,11 +28,76 @@ class PlayerTest extends TestCase
         $response->assertStatus(status:200);
     }
 
-    public function test_show_PlayerController_getPlayerById_ReturnStatus404(): void
+    /**
+    * Test sobre endpoint /players
+    * Uso de GET Players
+    */
+    public function test_index_PlayerController_getAllPlayers(): void
     {
-        $playerId = 1;
+        $players = Player::factory()->count(5)->create();
+
         $ver = env(key:"APP_VER");
-        $response = $this->get(uri:"{$ver}/player/{$playerId}");
-        $response->assertStatus(status:404);
+        $response = $this->get(uri:"/{$ver}/players");
+        $response->assertStatus(status: 200)
+                 ->assertJsonCount(count: 5);
+    }
+
+    /**
+    * Test sobre endpoint /players/{id}
+    * Uso de GET Players
+    */
+    public function test_show_PlayerController_getPlayerId(): void
+    {
+        $player = Player::factory()->create();
+
+        $ver = env(key:"APP_VER");
+        $response = $this->get(uri:"/{$ver}/players/{$player->id}");
+        $response->assertStatus(status: 200)
+                 ->assertJson(value: [
+                    'id'         => $player->id,
+                    'first_name' => $player->first_name,
+                    'last_name'  => $player->last_name,
+        ]);
+    }
+
+    /**
+    * Test sobre endpoint /players
+    * Uso de POST Players
+    * Error
+    */
+    public function test_store_error_PlayerController_postPlayer(): void
+    {
+        $player = [
+            'first_name' => 'Lucia',
+            'last_name'  => 'Fernandez',
+            'date_birth' => '2018-01-01',
+        ];
+
+        $ver = env(key:"APP_VER");
+        $response = $this->postJson(uri:"/{$ver}/players", data: $player);
+        $response->assertStatus(status: 422);
+    }
+
+    /**
+    * Test sobre endpoint /players
+    * Uso de POST Players
+    * Creacion
+    */
+    public function test_store_PLayerController_postPlayer(): void
+    {
+        $player = [
+            'first_name' => 'Lucia',
+            'last_name'  => 'Fernandez',
+            'date_birth' => '2018-01-01',
+            'gender'     => 'famale',
+        ];
+
+        $ver = env(key:"APP_VER");
+        $response = $this->postJson(uri:"/{$ver}/players", data: $player);
+        $response->assertStatus(status: 201)
+                 ->assertJsonFragment(data: [
+                    'first_name' => $player['first_name'],
+                    'last_name'  => $player['last_name'],
+                 ]);
     }
 }
